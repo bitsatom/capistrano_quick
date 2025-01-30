@@ -66,7 +66,8 @@ class SetupDeploymentGenerator < Rails::Generators::Base
     generate "add_capistrano_gems"
 
     # Run bundle install
-    say "Running: bundle install"
+    say "Running: bundle installs"
+    run "bundle install --platform=x86_64-linux"
     run "bundle install"
 
     # Ask for confirmation before running cap install with the given environment
