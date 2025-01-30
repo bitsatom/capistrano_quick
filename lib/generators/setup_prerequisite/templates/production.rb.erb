@@ -1,0 +1,5 @@
+server '<%= @server %>', user: 'deploy', roles: %w{web app db}
+set :rails_env, '<%= @env %>'
+set :stage, '<%= @env %>'
+set :rack_env, '<%= @env %>'
+set :branch , 'deployment'

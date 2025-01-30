@@ -1,0 +1,13 @@
+[Unit]
+Description=Puma HTTP Server
+After=network.target
+
+[Service]
+Type=simple
+User=<%= @deploy_user %>
+WorkingDirectory=<%= @app_path %>/current
+ExecStart=/home/<%= @deploy_user %>/.rvm/bin/rvm ruby-3.2.2 do bundle exec puma -C <%= @app_path %>/shared/puma.rb
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,65 @@
+# lib/generators/replace_deploy/templates/setup_prerequisite.rake
+namespace :deploy do
+  desc "Upload and configure Nginx"
+  task :setup_prerequisite do
+    on roles(:web) do
+
+      unless test("which git")
+        info "git not found, installing..."
+        execute :sudo, "apt-get install git"
+      else
+        info "git already exists, skipping..."
+      end
+
+      unless test("which nginx")
+        info "nginx not found, installing..."
+        execute :sudo, "apt-get install -y nginx"
+      else
+        info "nginx already exists, skipping..."
+      end
+
+      unless test("which node")
+        info "Node.js not found, installing..."
+        execute :sudo, "apt update"
+        execute :sudo, "apt install -y nodejs"
+      else
+        info "Node.js is already installed"
+      end
+
+      unless test("which yarn")
+        info "Yarn not found, installing..."
+        execute :sudo, "curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -"
+        execute :sudo, "echo \"deb https://dl.yarnpkg.com/debian/ stable main\" | sudo tee /etc/apt/sources.list.d/yarn.list"
+        execute :sudo, "apt update && sudo apt install -y yarn"
+      else
+        info "Yarn is already installed"
+      end
+
+      if fetch(:mode, 'repeat') == 'once'
+        # Upload the nginx configuration file
+        upload! "config/deployment/nginx.conf", "/tmp/nginx.conf"
+        # Move it to the correct location with sudo
+        execute :sudo, "mv /tmp/nginx.conf /etc/nginx/sites-available/default"
+        # Change Nginx user from www-data to <%= @deploy_user %> using sed
+        info "Changing Nginx user from www-data to <%= @deploy_user %>..."
+        execute :sudo, "sed -i 's/^user\\s\\+www-data;/user <%= @deploy_user %>;/' /etc/nginx/nginx.conf"
+      end
+
+      # Restart nginx to apply changes
+      execute :sudo, "systemctl daemon-reload"
+      execute :sudo, "systemctl restart nginx"
+
+      info "PUMA SETUP STARTED"
+
+      upload! "config/deployment/puma.rb", "/tmp/puma.rb"
+      execute :sudo, "mv /tmp/puma.rb <%= @app_path %>/shared/puma.rb"
+
+      # Upload the puma configuration file
+      upload! "config/deployment/puma.service", "/tmp/puma.service"
+      # Move it to the correct location with sudo
+      execute :sudo, "mv /tmp/puma.service /etc/systemd/system/puma.service"
+      execute :sudo, "systemctl daemon-reload"
+      info "PUMA SETUP END"
+    end
+  end
+end
