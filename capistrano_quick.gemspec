@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.description   = "Capistrano is a powerful deployment automation tool for Ruby on Rails applications. In this guide, we’ll set up Capistrano with Puma on an AWS EC2 instance to deploy a Rails application smoothly."
   spec.homepage      = "https://github.com/bitsatom/capistrano_quick"
   spec.license       = "MIT"
-  spec.required_ruby_version = ">= 3.0.0"
+  spec.required_ruby_version = ">= 2.7.5"
 
   spec.metadata["homepage_uri"] = spec.homepage
   spec.metadata["source_code_uri"] = "https://github.com/bitsatom/capistrano_quick"
