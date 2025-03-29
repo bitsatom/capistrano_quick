@@ -9,7 +9,7 @@ class ReplaceDeployGenerator < Rails::Generators::Base
 
   def replace_deploy
     deploy_rb_path = "config/deploy.rb"
-    app_name = Rails.application.class.module_parent.to_s.tableize.singularize
+    app_name = Rails.application.class.module_parent.to_s.tableize.singularize rescue "app_name"
     create_file deploy_rb_path, <<~DEPLOY_RB, force: true
       # config valid for current version and patch releases of Capistrano
       lock "~> 3.19.2"
